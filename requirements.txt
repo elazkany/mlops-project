@@ -1,0 +1,9 @@
+# Code quality
+pylint==2.14.0
+flake8==4.0.1
+
+# Data transformation
+pandas
+
+# Data Version Control
+dvc
