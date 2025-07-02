@@ -4,6 +4,7 @@ import logging
 import subprocess
 from urllib.parse import urlparse
 
+
 def download_zip(url: str, download_dir: str = "data/raw") -> str:
     """
     Downloads a ZIP file from a specified URL and saves it to the target directory.
@@ -35,6 +36,7 @@ def download_zip(url: str, download_dir: str = "data/raw") -> str:
 
     return zip_path
 
+
 def extract_zip(zip_path: str, output_dir: str = "data/raw") -> None:
     """
     Extracts the contents of a ZIP file to the specified directory.
@@ -52,6 +54,7 @@ def extract_zip(zip_path: str, output_dir: str = "data/raw") -> None:
     subprocess.run(["unzip", "-o", zip_path, "-d", output_dir], check=True)
     logging.info("✅ Extraction complete.")
     subprocess.run(["rm", "-f", zip_path], check=True)
+
 
 if __name__ == "__main__":
     """

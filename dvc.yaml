@@ -1,0 +1,6 @@
+stages:
+  check_for_new_data:
+    cmd: python3 src/data/check_for_new_data.py
+    outs:
+    - data/last_updated.txt
+

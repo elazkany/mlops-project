@@ -1,0 +1,4 @@
+download:
+  url: "https://www.kaggle.com/api/v1/datasets/download/mlg-ulb/creditcardfraud"
+  out: "data/raw"
+  last_updated: "data/last_updated.txt"

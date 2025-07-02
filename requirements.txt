@@ -2,8 +2,11 @@
 pylint==2.14.0
 flake8==4.0.1
 
-# Data transformation
-pandas
+# Testing dependencies
+pytest==8.4.1
 
-# Data Version Control
-dvc
+# Code Coverage
+coverage==6.3.2
+
+requests==2.31.0
+pyyaml==6.0.1

@@ -1,0 +1,9 @@
+schema: '2.0'
+stages:
+  check_for_new_data:
+    cmd: python3 src/data/check_for_new_data.py
+    outs:
+    - path: data/last_updated.txt
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
