@@ -1,6 +1,23 @@
 stages:
   check_for_new_data:
     cmd: python3 src/data/check_for_new_data.py
+    params:
+      - download.url
+      - download.last_updated
+    deps:
+      - params.yaml
     outs:
-    - data/last_updated.txt
+      - data/last_updated.txt
+
+  collect_data:
+    cmd: python3 src/data/collect_and_extract.py ${download.url} --out ${download.out}
+    params:
+      - download.url
+      - download.out
+    deps:
+      - src/data/collect_and_extract.py
+      - params.yaml
+      - data/last_updated.txt
+    outs:
+      - data/raw
 
