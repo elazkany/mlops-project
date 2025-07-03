@@ -31,4 +31,4 @@ jobs:
         run: flake8 src tests --statistics
 
       - name: Run unit tests with pytest
-        run: pytest -v --cov=src --cov-report=term-missing
+        run: PYTHONPATH=src pytest -v --cov=src --cov-report=term-missing
