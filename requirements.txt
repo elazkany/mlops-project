@@ -11,3 +11,6 @@ coverage==6.3.2
 
 requests==2.31.0
 pyyaml==6.0.1
+
+pandas
+scikit-learn
