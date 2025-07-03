@@ -5,8 +5,8 @@ stages:
     deps:
     - path: params.yaml
       hash: md5
-      md5: c0694603cfc07d4e077c77888d26e51f
-      size: 148
+      md5: 8df812c50494270be242df798c6a3bf6
+      size: 333
     params:
       params.yaml:
         download.last_updated: data/last_updated.txt
@@ -28,20 +28,42 @@ stages:
       size: 0
     - path: params.yaml
       hash: md5
-      md5: c0694603cfc07d4e077c77888d26e51f
-      size: 148
+      md5: 8df812c50494270be242df798c6a3bf6
+      size: 333
     - path: src/data/collect_and_extract.py
       hash: md5
-      md5: 6229017a6757c10a35d35ed490535066
-      size: 2462
+      md5: 78eb952afa4054c50b45e9c31bf30f40
+      size: 2535
     params:
       params.yaml:
         download.out: data/raw
         download.url: 
           https://www.kaggle.com/api/v1/datasets/download/mlg-ulb/creditcardfraud
     outs:
-    - path: data/raw
+    - path: data/raw/creditcard.csv
       hash: md5
-      md5: f2c7448614b9ec3d9e7e25dac874171f.dir
+      md5: e90efcb83d69faf99fcab8b0255024de
       size: 150828752
-      nfiles: 1
+  preprocess:
+    cmd: python3 src/data/preprocess.py
+    deps:
+    - path: data/raw/creditcard.csv
+      hash: md5
+      md5: e90efcb83d69faf99fcab8b0255024de
+      size: 150828752
+    - path: src/data/preprocess.py
+      hash: md5
+      md5: dff68926118d570524cc14d770fd50a1
+      size: 962
+    params:
+      params.yaml:
+        preprocess.processed_data_path: data/processed/processed_creditcard.csv
+        preprocess.raw_data_path: data/raw/creditcard.csv
+        preprocess.scale_columns:
+        - Time
+        - Amount
+    outs:
+    - path: data/processed/processed_creditcard.csv
+      hash: md5
+      md5: f4f163743df238c0e2dcd99bf42f82dd
+      size: 158139932
