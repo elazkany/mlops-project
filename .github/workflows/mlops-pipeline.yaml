@@ -20,7 +20,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: 3.10.12
 
       - name: Lint with flake8 # The flake8 library was installed as a dependency in the requirements.txt file
         run: |
