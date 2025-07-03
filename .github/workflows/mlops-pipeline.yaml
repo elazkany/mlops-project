@@ -28,8 +28,7 @@ jobs:
           pip install -r requirements.txt  # Or wherever flake8 is listed
 
       - name: Lint with flake8 # The flake8 library was installed as a dependency in the requirements.txt file
-        run: |
-          make lint
+        run: flake8 src tests --statistics
 
       - name: Run unit tests with pytest
-        run: make test
+        run: pytest -v --cov=src --cov-report=term-missing
