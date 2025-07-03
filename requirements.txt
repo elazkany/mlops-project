@@ -4,9 +4,13 @@ flake8==4.0.1
 
 # Testing dependencies
 pytest==8.4.1
+pytest-cov
 
 # Code Coverage
 coverage==6.3.2
 
 requests==2.31.0
 pyyaml==6.0.1
+
+pandas
+scikit-learn
