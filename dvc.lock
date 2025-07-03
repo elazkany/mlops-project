@@ -1,0 +1,47 @@
+schema: '2.0'
+stages:
+  check_for_new_data:
+    cmd: python3 src/data/check_for_new_data.py
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: c0694603cfc07d4e077c77888d26e51f
+      size: 148
+    params:
+      params.yaml:
+        download.last_updated: data/last_updated.txt
+        download.url: 
+          https://www.kaggle.com/api/v1/datasets/download/mlg-ulb/creditcardfraud
+    outs:
+    - path: data/last_updated.txt
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+  collect_data:
+    cmd: python3 src/data/collect_and_extract.py 
+      https://www.kaggle.com/api/v1/datasets/download/mlg-ulb/creditcardfraud 
+      --out data/raw
+    deps:
+    - path: data/last_updated.txt
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: params.yaml
+      hash: md5
+      md5: c0694603cfc07d4e077c77888d26e51f
+      size: 148
+    - path: src/data/collect_and_extract.py
+      hash: md5
+      md5: 6229017a6757c10a35d35ed490535066
+      size: 2462
+    params:
+      params.yaml:
+        download.out: data/raw
+        download.url: 
+          https://www.kaggle.com/api/v1/datasets/download/mlg-ulb/creditcardfraud
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: f2c7448614b9ec3d9e7e25dac874171f.dir
+      size: 150828752
+      nfiles: 1

@@ -1,51 +1,51 @@
+# src/data/collect_and_extract.py
+
 import os
-import argparse
 import logging
 import subprocess
 from urllib.parse import urlparse
+from argparse import ArgumentParser
+
 
 def download_zip(url: str, download_dir: str = "data/raw") -> str:
     """
-    Downloads a ZIP file from a specified URL and saves it to the target directory.
+    Downloads a ZIP file from a given URL and saves it to the specified directory.
 
-    If the filename cannot be derived from the URL, a default name 'dataset.zip' is used.
+    If the URL does not include a filename, 'dataset.zip' is used by default.
 
     Args:
-        url (str): URL pointing to the ZIP file to download.
-        download_dir (str): Directory where the ZIP file will be saved. Defaults to "data/raw".
+        url (str): The direct URL to the ZIP file.
+        download_dir (str): Directory where the ZIP file will be saved.
 
     Returns:
-        str: Full path to the downloaded ZIP file.
+        str: Absolute path to the downloaded ZIP file.
 
     Raises:
-        subprocess.CalledProcessError: If the download command fails.
+        subprocess.CalledProcessError: If the curl command fails to complete.
     """
     os.makedirs(download_dir, exist_ok=True)
 
-    # Extract name or fallback
     base = os.path.basename(urlparse(url).path)
     filename = f"{base}.zip" if base and not base.endswith(".zip") else (base or "dataset.zip")
-
     zip_path = os.path.join(download_dir, filename)
 
     logging.info(f"📥 Downloading ZIP from: {url}")
-    cmd = ["curl", "-L", "-o", zip_path, url]
-    subprocess.run(cmd, check=True)
+    subprocess.run(["curl", "-L", "-o", zip_path, url], check=True)
     logging.info(f"✅ Download complete → {zip_path}")
 
     return zip_path
 
+
 def extract_zip(zip_path: str, output_dir: str = "data/raw") -> None:
     """
-    Extracts the contents of a ZIP file to the specified directory.
+    Extracts a ZIP file's contents into the specified directory and deletes the ZIP after extraction.
 
     Args:
-        zip_path (str): Path to the ZIP file to extract.
-        output_dir (str): Target directory for the extracted contents.
-                          Defaults to "data/raw".
+        zip_path (str): Path to the downloaded ZIP file.
+        output_dir (str): Destination directory for the extracted contents.
 
     Raises:
-        subprocess.CalledProcessError: If the unzip command fails.
+        subprocess.CalledProcessError: If the unzip or remove operation fails.
     """
     logging.info(f"📂 Extracting {zip_path} to {output_dir}")
     os.makedirs(output_dir, exist_ok=True)
@@ -53,20 +53,21 @@ def extract_zip(zip_path: str, output_dir: str = "data/raw") -> None:
     logging.info("✅ Extraction complete.")
     subprocess.run(["rm", "-f", zip_path], check=True)
 
-if __name__ == "__main__":
-    """
-    Entry point for command-line execution. Parses arguments and performs
-    download and extraction of a ZIP file from a given URL.
 
-    Example:
-        python collect_and_extract.py "https://example.com/data.zip" --out data/raw
+def main():
+    """
+    Parses command-line arguments and runs the full download and extraction workflow.
     """
     logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 
-    parser = argparse.ArgumentParser(description="Download and extract zip file from URL.")
-    parser.add_argument("url", help="Link to a .zip file")
-    parser.add_argument("--out", default="data/raw", help="Directory to extract to (default: data/raw)")
+    parser = ArgumentParser(description="Download and extract a ZIP file from a given URL.")
+    parser.add_argument("url", help="Direct link to a .zip file")
+    parser.add_argument("--out", default="data/raw", help="Destination directory for the extracted files")
     args = parser.parse_args()
 
     zip_path = download_zip(args.url, args.out)
     extract_zip(zip_path, args.out)
+
+
+if __name__ == "__main__":
+    main()
