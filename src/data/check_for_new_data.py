@@ -1,25 +1,8 @@
 # src/data/check_for_new_data.py
 
 import os
-import yaml
 import requests
-
-
-def load_url_from_params(params_path="params.yaml"):
-    """
-    Loads the download URL and metadata file path from a YAML configuration file.
-
-    Args:
-        params_path (str): Path to the YAML file containing the download configuration.
-                           Defaults to "params.yaml".
-
-    Returns:
-        tuple[str, str]: A tuple containing the download URL and the path to the metadata file
-                         where the last modified timestamp should be stored.
-    """
-    with open(params_path, "r") as f:
-        params = yaml.safe_load(f)
-        return params["download"]["url"], params["download"]["last_updated"]
+from utils.io_load import load_params
 
 
 def fetch_last_modified(url):
@@ -56,7 +39,9 @@ def main():
     2. Sends a request to fetch the Last-Modified timestamp of the target URL.
     3. Writes the retrieved timestamp to the metadata file.
     """
-    url, meta_file = load_url_from_params()
+    params = load_params("download")
+    url = params["url"]
+    meta_file = params["last_updated"]
     last_modified = fetch_last_modified(url)
     write_last_modified_timestamp(meta_file, last_modified)
 

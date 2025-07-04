@@ -18,5 +18,8 @@
       ]
     }
   },
+  "containerEnv": {
+    "PYTHONPATH": "/workspaces/mlops-project/src"
+  },
   "postCreateCommand": "bash ./bin/setup.sh"
 }

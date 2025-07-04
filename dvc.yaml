@@ -2,33 +2,78 @@ stages:
   check_for_new_data:
     cmd: python3 src/data/check_for_new_data.py
     params:
-      - download.url
-      - download.last_updated
+    - download.url
+    - download.last_updated
     deps:
-      - params.yaml
+    - params.yaml
     outs:
-      - data/last_updated.txt
+    - data/last_updated.txt
 
   collect_data:
-    cmd: python3 src/data/collect_and_extract.py ${download.url} --out ${download.out}
+    cmd: python3 src/data/collect_and_extract.py ${download.url} --out 
+      ${download.out}
     params:
-      - download.url
-      - download.out
+    - download.url
+    - download.out
     deps:
-      - src/data/collect_and_extract.py
-      - params.yaml
-      - data/last_updated.txt
+    - src/data/collect_and_extract.py
+    - params.yaml
+    - data/last_updated.txt
     outs:
-      - data/raw/creditcard.csv
+    - data/raw/creditcard.csv
 
   preprocess:
     cmd: python3 src/data/preprocess.py
     deps:
-      - data/raw/creditcard.csv
-      - src/data/preprocess.py
+    - data/raw/creditcard.csv
+    - src/data/preprocess.py
     params:
-      - preprocess.raw_data_path
-      - preprocess.processed_data_path
-      - preprocess.scale_columns
+    - preprocess.raw_data_path
+    - preprocess.processed_data_path
+    - preprocess.scale_columns
     outs:
-      - data/processed/processed_creditcard.csv
+    - data/processed/processed_creditcard.csv
+
+  split:
+    cmd: python3 src/train/split.py
+    deps:
+    - src/train/split.py
+    - data/processed/processed_creditcard.csv
+    params:
+    - split.processed_data_path
+    - split.split_data_path
+    - split.target_column
+    - split.test_size
+    - split.random_state
+    outs:
+    - data/split/train_raw.npz
+    - data/split/train_balanced.npz
+    - data/split/test.npz
+
+  train_and_evaluate:
+    cmd: python3 src/train/train_and_evaluate.py
+    deps:
+    - data/split/test.npz
+    - data/split/train_balanced.npz
+    - src/train/train_and_evaluate.py
+    params:
+    - model.n_estimators
+    - model.max_depth
+    - model.random_state
+    outs:
+    - models/model.pkl
+    metrics:
+    - metrics.json:
+        cache: false
+    plots:
+      - plots/predictions.csv:
+          # Write the plot template
+          template: confusion # Style of plot
+          x: predicted_label # X-axis column name in csv file
+          y: true_label # Y-axis column name in csv file
+          x_label: 'Predicted label'
+          y_label: 'True label'
+          title: Confusion matrix
+          # Set the cache parameter to store
+          # plot data in git repository
+          cache: false
