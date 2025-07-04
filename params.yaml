@@ -8,3 +8,10 @@ preprocess:
   processed_data_path: data/processed/processed_creditcard.csv
   target_column: Class
   scale_columns: ["Time", "Amount"]
+
+split:
+  processed_data_path: data/processed/processed_creditcard.csv
+  split_data_path: data/split
+  target_column: Class
+  test_size: 0.2
+  random_state: 42

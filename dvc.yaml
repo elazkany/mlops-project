@@ -32,3 +32,19 @@ stages:
       - preprocess.scale_columns
     outs:
       - data/processed/processed_creditcard.csv
+
+  split:
+    cmd: python3 src/train/split.py
+    deps:
+      - src/train/split.py
+      - data/processed/processed_creditcard.csv
+    params:
+      - split.processed_data_path
+      - split.split_data_path
+      - split.target_column
+      - split.test_size
+      - split.random_state
+    outs:
+    - data/split/train_raw.npz
+    - data/split/train_balanced.npz
+    - data/split/test.npz

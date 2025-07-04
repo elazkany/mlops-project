@@ -5,8 +5,8 @@ stages:
     deps:
     - path: params.yaml
       hash: md5
-      md5: 8df812c50494270be242df798c6a3bf6
-      size: 333
+      md5: fcae731f73ee7b048d251d9b22769d10
+      size: 500
     params:
       params.yaml:
         download.last_updated: data/last_updated.txt
@@ -28,8 +28,8 @@ stages:
       size: 0
     - path: params.yaml
       hash: md5
-      md5: 8df812c50494270be242df798c6a3bf6
-      size: 333
+      md5: fcae731f73ee7b048d251d9b22769d10
+      size: 500
     - path: src/data/collect_and_extract.py
       hash: md5
       md5: 78eb952afa4054c50b45e9c31bf30f40
@@ -53,8 +53,8 @@ stages:
       size: 150828752
     - path: src/data/preprocess.py
       hash: md5
-      md5: dff68926118d570524cc14d770fd50a1
-      size: 962
+      md5: ed4ae68183beba6f1731769972a32a04
+      size: 2006
     params:
       params.yaml:
         preprocess.processed_data_path: data/processed/processed_creditcard.csv
@@ -67,3 +67,65 @@ stages:
       hash: md5
       md5: f4f163743df238c0e2dcd99bf42f82dd
       size: 158139932
+  train:
+    cmd: python3 src/train/train.py
+    deps:
+    - path: data/processed/processed_creditcard.csv
+      hash: md5
+      md5: f4f163743df238c0e2dcd99bf42f82dd
+      size: 158139932
+    - path: src/train/train.py
+      hash: md5
+      md5: dff1bfd903e8790148d4272e3a089221
+      size: 2884
+    params:
+      params.yaml:
+        train.processed_data_path: data/processed/processed_creditcard.csv
+        train.random_state: 42
+        train.target_column: Class
+        train.test_size: 0.2
+        train.train_data_path: data/split
+    outs:
+    - path: data/split/test.npz
+      hash: md5
+      md5: 07f55fe21a9a6b69a706cc130db3e69c
+      size: 12855936
+    - path: data/split/train_balanced.npz
+      hash: md5
+      md5: 2c5a253948ef9ac12b02bd2843f1ee6a
+      size: 102934827
+    - path: data/split/train_raw.npz
+      hash: md5
+      md5: c9280487bf347f977052099b0463e55c
+      size: 51397361
+  split:
+    cmd: python3 src/train/split.py
+    deps:
+    - path: data/processed/processed_creditcard.csv
+      hash: md5
+      md5: f4f163743df238c0e2dcd99bf42f82dd
+      size: 158139932
+    - path: src/train/split.py
+      hash: md5
+      md5: 4bd40768b51246e4b7c5260eb91a3695
+      size: 2883
+    params:
+      params.yaml:
+        split.processed_data_path: data/processed/processed_creditcard.csv
+        split.random_state: 42
+        split.split_data_path: data/split
+        split.target_column: Class
+        split.test_size: 0.2
+    outs:
+    - path: data/split/test.npz
+      hash: md5
+      md5: 07f55fe21a9a6b69a706cc130db3e69c
+      size: 12855936
+    - path: data/split/train_balanced.npz
+      hash: md5
+      md5: 2c5a253948ef9ac12b02bd2843f1ee6a
+      size: 102934827
+    - path: data/split/train_raw.npz
+      hash: md5
+      md5: c9280487bf347f977052099b0463e55c
+      size: 51397361
