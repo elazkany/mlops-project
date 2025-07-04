@@ -42,6 +42,20 @@ jobs:
           echo "🧪 Running DVC pipeline..."
           dvc repro
 
+      - name: Commit and push DVC-tracked outputs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Set generic Git identity using GitHub Actions-provided variables
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+          dvc push
+
+          git add metrics.json plots/
+          git commit -m "Update metrics and plots from CI" || echo "Nothing to commit"
+          git push || echo "Nothing to push"
+
       - name: Write CML report
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
