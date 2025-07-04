@@ -1,97 +1,63 @@
-# tests/data/test_check_for_new_data.py
-
 import os
-import yaml
-import pytest
+import tempfile
 from unittest import mock
-from src.data.check_for_new_data import (
-    load_url_from_params,
-    fetch_last_modified,
-    write_last_modified_timestamp
-)
+from src.data import check_for_new_data
 
 
-@pytest.fixture
-def project_env(tmp_path, monkeypatch):
+def test_fetch_last_modified_returns_header():
     """
-    Creates an isolated test environment with a temporary 'params.yaml' file
-    and a writable 'data' directory.
-
-    - Sets the working directory to a temporary folder
-    - Creates a mock download URL and output metadata path
-    - Returns a dict with the expected test values for validation
-
-    Args:
-        tmp_path (pathlib.Path): Built-in pytest fixture for temporary file paths
-        monkeypatch (function): Fixture for safely modifying environment behavior
-
-    Returns:
-        dict: A dictionary containing the 'url' and 'last_updated' path for testing
+    Test that fetch_last_modified() successfully retrieves
+    the 'Last-Modified' HTTP header from a mocked URL.
     """
-    monkeypatch.chdir(tmp_path)
-    params_yaml = {
-        "download": {
-            "url": "https://example.com/data.zip",
-            "last_updated": "data/last_updated.txt"
-        }
-    }
-    with open(tmp_path / "params.yaml", "w") as f:
-        yaml.dump(params_yaml, f)
+    with mock.patch("requests.head") as mock_head:
+        mock_response = mock.Mock()
+        mock_response.headers = {"Last-Modified": "Wed, 03 Jul 2024 17:05:00 GMT"}
+        mock_head.return_value = mock_response
 
-    os.makedirs(tmp_path / "data", exist_ok=True)
-    return params_yaml["download"]
+        result = check_for_new_data.fetch_last_modified("https://example.com")
+        assert result == "Wed, 03 Jul 2024 17:05:00 GMT"
+        mock_head.assert_called_once()
 
 
-def test_load_url_from_params(project_env):
+def test_write_last_modified_timestamp_creates_file_with_content():
     """
-    Tests whether the function correctly loads download metadata
-    from a local 'params.yaml' file.
-
-    Asserts:
-        - Extracted URL matches expected test URL
-        - Metadata file path matches expected location
+    Test that write_last_modified_timestamp() correctly writes
+    a given timestamp string to a file, creating directories as needed.
     """
-    url, meta_file = load_url_from_params()
-    assert url == project_env["url"]
-    assert meta_file == project_env["last_updated"]
+    with tempfile.TemporaryDirectory() as tmpdir:
+        file_path = os.path.join(tmpdir, "meta/last_modified.txt")
+        timestamp = "Mon, 01 Jan 2024 12:00:00 GMT"
+
+        check_for_new_data.write_last_modified_timestamp(file_path, timestamp)
+
+        assert os.path.exists(file_path)
+        with open(file_path) as f:
+            content = f.read()
+            assert content == timestamp
 
 
-@mock.patch("requests.head")
-def test_fetch_last_modified(mock_head):
+def test_main_logic_with_mocked_dependencies():
     """
-    Tests that 'fetch_last_modified' properly extracts the 'Last-Modified'
-    header from an HTTP response.
-
-    Mocks:
-        - requests.head: to simulate a successful response with a known header
-
-    Asserts:
-        - Returned timestamp matches the mocked header value
+    Test the full main() execution flow with mocked dependencies:
+    - load_params() returns a test configuration
+    - fetch_last_modified() returns a simulated timestamp
+    Verifies that the correct timestamp is written to the file.
     """
-    mock_head.return_value.headers = {
-        "Last-Modified": "Wed, 02 Jul 2025 18:00:00 GMT"
+    mock_params = {
+        "url": "https://example.com",
+        "last_updated": "temp/test_last_modified.txt",
     }
 
-    result = fetch_last_modified("https://example.com/data.zip")
-    assert result == "Wed, 02 Jul 2025 18:00:00 GMT"
+    with tempfile.TemporaryDirectory() as tmpdir:
+        full_path = os.path.join(tmpdir, "test_last_modified.txt")
+        mock_params["last_updated"] = full_path
 
+        with mock.patch("src.data.check_for_new_data.load_params", return_value=mock_params), \
+             mock.patch("src.data.check_for_new_data.fetch_last_modified", return_value="Thu, 04 Jul 2025 10:30:00 GMT"):
 
-def test_write_last_modified_timestamp(project_env):
-    """
-    Tests that the timestamp is correctly written to a file on disk.
+            check_for_new_data.main()
 
-    - Verifies the file is created
-    - Confirms written content matches the test timestamp
-
-    Asserts:
-        - File exists
-        - File content matches expected timestamp
-    """
-    test_timestamp = "Wed, 02 Jul 2025 18:00:00 GMT"
-    file_path = project_env["last_updated"]
-
-    write_last_modified_timestamp(file_path, test_timestamp)
-
-    assert os.path.exists(file_path)
-    with open(file_path) as f:
-        assert f.read() == test_timestamp
+            assert os.path.exists(full_path)
+            with open(full_path) as f:
+                content = f.read()
+                assert content == "Thu, 04 Jul 2025 10:30:00 GMT"

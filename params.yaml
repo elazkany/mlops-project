@@ -15,3 +15,8 @@ split:
   target_column: Class
   test_size: 0.2
   random_state: 42
+
+model:
+  n_estimators: 100
+  max_depth: null
+  random_state: 42

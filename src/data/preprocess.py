@@ -1,34 +1,7 @@
 import pandas as pd
 from sklearn.preprocessing import RobustScaler
-import yaml
-import os
-
-
-def load_params(config_path: str = "params.yaml") -> dict:
-    """
-    Load preprocessing parameters from a YAML configuration file.
-
-    Parameters:
-        config_path (str): Path to the YAML config file.
-
-    Returns:
-        dict: Dictionary containing preprocessing parameters.
-    """
-    with open(config_path) as f:
-        return yaml.safe_load(f)["preprocess"]
-
-
-def read_dataset(filename: str) -> pd.DataFrame:
-    """
-    Read a CSV file into a Pandas DataFrame.
-
-    Parameters:
-        filename (str): Path to the CSV file.
-
-    Returns:
-        pd.DataFrame: Loaded dataset as a DataFrame.
-    """
-    return pd.read_csv(filename)
+from utils.io_load import load_params, load_dataset
+from utils.io_save import save_dataframe
 
 
 def scale_columns(df: pd.DataFrame, columns_to_scale: list) -> pd.DataFrame:
@@ -48,26 +21,14 @@ def scale_columns(df: pd.DataFrame, columns_to_scale: list) -> pd.DataFrame:
     return df_scaled
 
 
-def save_processed_data(df: pd.DataFrame, output_path: str):
-    """
-    Save the DataFrame as a CSV file at the specified location.
-
-    Parameters:
-        df (pd.DataFrame): DataFrame to save.
-        output_path (str): File path to store the CSV output.
-    """
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    df.to_csv(output_path, index=False)
-
-
 def main():
     """
     Main function to execute preprocessing pipeline.
     """
-    params = load_params()
-    df = read_dataset(params["raw_data_path"])
+    params = load_params("preprocess")
+    df = load_dataset(params["raw_data_path"])
     df_scaled = scale_columns(df, params["scale_columns"])
-    save_processed_data(df_scaled, params["processed_data_path"])
+    save_dataframe(df_scaled, params["processed_data_path"])
 
 
 if __name__ == "__main__":

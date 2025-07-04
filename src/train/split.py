@@ -5,20 +5,8 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE
-from utils.params import load_params
-
-
-def load_dataset(csv_path: str) -> pd.DataFrame:
-    """
-    Load a processed CSV dataset into a Pandas DataFrame.
-
-    Parameters:
-        csv_path (str): File path to the processed CSV.
-
-    Returns:
-        pd.DataFrame: Loaded dataset.
-    """
-    return pd.read_csv(csv_path)
+from utils.io_load import load_params, load_dataset
+from utils.io_save import save_npz
 
 
 def split_data(df: pd.DataFrame, target_column: str, test_size: float, random_state: int):
@@ -36,10 +24,10 @@ def split_data(df: pd.DataFrame, target_column: str, test_size: float, random_st
     """
     X = df.drop(columns=[target_column])
     y = df[target_column]
-    return train_test_split(X, y, test_size=test_size, random_state=random_state, stratify=y)
+    return train_test_split(X, y, test_size=test_size, random_state=random_state)
 
 
-def apply_smote(X, y, random_state: int):
+def apply_smote(X, y, random_state):
     """
     Apply SMOTE to balance training data.
 
@@ -55,26 +43,21 @@ def apply_smote(X, y, random_state: int):
     return smote.fit_resample(X, y)
 
 
-def save_array_pair(X, y, path: str):
-    """
-    Save feature and label arrays as a compressed .npz file.
-    """
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    np.savez_compressed(path, X=X, y=y)
-
-
 def save_split_variants(
-    X_train_raw, y_train_raw,
-    X_train_balanced, y_train_balanced,
-    X_test, y_test,
-    base_dir,
-):
+    X_train_raw: np.ndarray,
+    y_train_raw: np.ndarray,
+    X_train_balanced: np.ndarray,
+    y_train_balanced: np.ndarray,
+    X_test: np.ndarray,
+    y_test: np.ndarray,
+    base_dir: str
+) -> None:
     """
     Save raw, balanced, and test splits to their respective .npz files.
     """
-    save_array_pair(X_train_raw, y_train_raw, os.path.join(base_dir, "train_raw.npz"))
-    save_array_pair(X_train_balanced, y_train_balanced, os.path.join(base_dir, "train_balanced.npz"))
-    save_array_pair(X_test, y_test, os.path.join(base_dir, "test.npz"))
+    save_npz(X_train_raw, y_train_raw, os.path.join(base_dir, "train_raw.npz"))
+    save_npz(X_train_balanced, y_train_balanced, os.path.join(base_dir, "train_balanced.npz"))
+    save_npz(X_test, y_test, os.path.join(base_dir, "test.npz"))
 
 
 def main():
