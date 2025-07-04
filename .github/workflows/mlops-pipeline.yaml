@@ -32,3 +32,28 @@ jobs:
 
       - name: Run unit tests with pytest
         run: PYTHONPATH=src pytest -v --cov=src --cov-report=term-missing
+
+      # Setup CML GitHub Action
+      - name: Setup CML
+        uses: iterative/setup-cml@v1
+
+      - name: Reproduce DVC pipeline
+        run: |
+          echo "🧪 Running DVC pipeline..."
+          dvc repro
+
+      - name: Write CML report
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Add metrics data to markdown
+          cat metrics.json >> model_eval_report.md
+          
+          # Add confusion matrix plot to markdown
+          echo "![confusion matrix plot](./confusion_matrix.png)" >> model_eval_report.md
+
+          # Create comment from markdown report
+          cml comment create model_eval_report.md
+
+      
+
