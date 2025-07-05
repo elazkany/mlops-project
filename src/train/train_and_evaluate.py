@@ -6,6 +6,7 @@ import os
 from src.utils.io_load import load_params, load_npz
 from src.utils.io_save import save_metrics, save_predictions, save_roc_curve
 from src.models.model import train_model, evaluate_model
+from src.utils.plot_utils import plot_confusion_matrix
 
 
 def main():
@@ -33,6 +34,7 @@ def main():
     save_metrics(metrics)
     save_predictions(y_test, y_pred)
     save_roc_curve(y_test, y_pred_proba)
+    plot_confusion_matrix(model, X_test, y_test)
 
 
 if __name__ == "__main__":
