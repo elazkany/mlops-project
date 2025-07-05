@@ -4,6 +4,7 @@ Test the training and evaluation pipeline using large, SMOTE-safe mock data.
 
 import numpy as np
 from unittest import mock
+from sklearn.ensemble import RandomForestClassifier
 from src.train import train_and_evaluate
 
 
@@ -36,10 +37,13 @@ def test_main_pipeline_runs_without_errors(
     X_test = np.random.rand(20, 10)
     y_test = np.array([0, 1]*10)
 
-    # Mocked function outputs
+    real_model = RandomForestClassifier(random_state=42)
+    real_model.fit(X_train, y_train)
+
+    # Mock return values
     mock_load_params.return_value = {"n_estimators": 100}
     mock_load_npz.side_effect = [(X_train, y_train), (X_test, y_test)]
-    mock_train_model.return_value = "mock_model"
+    mock_train_model.return_value = real_model
     mock_eval_model.return_value = (
         {"accuracy": 0.95},
         [0, 1]*10,
@@ -53,8 +57,9 @@ def test_main_pipeline_runs_without_errors(
     mock_load_params.assert_called_once()
     assert mock_load_npz.call_count == 2
     mock_train_model.assert_called_once_with(X_train, y_train, {"n_estimators": 100})
-    mock_eval_model.assert_called_once_with("mock_model", X_test, y_test)
+    mock_eval_model.assert_called_once_with(real_model, X_test, y_test)
     mock_joblib_dump.assert_called_once()
     mock_save_metrics.assert_called_once()
     mock_save_preds.assert_called_once()
     mock_save_roc.assert_called_once()
+
