@@ -1,6 +1,6 @@
 stages:
   check_for_new_data:
-    cmd: python3 src/data/check_for_new_data.py
+    cmd: python3 -m src.data.check_for_new_data
     params:
     - download.url
     - download.last_updated
@@ -10,7 +10,7 @@ stages:
     - data/last_updated.txt
 
   collect_data:
-    cmd: python3 src/data/collect_and_extract.py ${download.url} --out 
+    cmd: python3 -m src.data.collect_and_extract ${download.url} --out 
       ${download.out}
     params:
     - download.url
@@ -23,7 +23,7 @@ stages:
     - data/raw/creditcard.csv
 
   preprocess:
-    cmd: python3 src/data/preprocess.py
+    cmd: python3 -m src.data.preprocess
     deps:
     - data/raw/creditcard.csv
     - src/data/preprocess.py
@@ -35,7 +35,7 @@ stages:
     - data/processed/processed_creditcard.csv
 
   split:
-    cmd: python3 src/train/split.py
+    cmd: python3 -m src.train.split
     deps:
     - src/train/split.py
     - data/processed/processed_creditcard.csv
@@ -51,7 +51,7 @@ stages:
     - data/split/test.npz
 
   train_and_evaluate:
-    cmd: python3 src/train/train_and_evaluate.py
+    cmd: python3 -m src.train.train_and_evaluate
     deps:
     - data/split/test.npz
     - data/split/train_balanced.npz

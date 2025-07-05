@@ -2,7 +2,7 @@
 
 import os
 import requests
-from utils.io_load import load_params
+from src.utils.io_load import load_params
 
 
 def fetch_last_modified(url):

@@ -32,3 +32,47 @@ jobs:
 
       - name: Run unit tests with pytest
         run: PYTHONPATH=src pytest -v --cov=src --cov-report=term-missing
+
+      # Setup CML GitHub Action
+      - name: Set up CML
+        uses: iterative/setup-cml@v2
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
+      - name: Reproduce DVC pipeline
+        run: |
+          echo "🧪 Running DVC pipeline..."
+          dvc repro
+
+      - name: Commit and push DVC-tracked outputs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Set generic Git identity using GitHub Actions-provided variables
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+          dvc push
+
+          git add metrics.json plots/
+          git commit -m "Update metrics and plots from CI" || echo "Nothing to commit"
+          git push || echo "Nothing to push"
+
+      - name: Write CML report
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Add metrics data to markdown
+          cat metrics.json >> model_eval_report.md
+
+          echo -e "\n\n---\n\n" >> model_eval_report.md
+          
+          # Add confusion matrix plot to markdown
+          echo "![confusion matrix plot](./confusion_matrix.png)" >> model_eval_report.md
+
+          # Create comment from markdown report
+          cml comment create model_eval_report.md
+
+      
+
