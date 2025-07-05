@@ -62,4 +62,3 @@ def test_main_pipeline_runs_without_errors(
     mock_save_metrics.assert_called_once()
     mock_save_preds.assert_called_once()
     mock_save_roc.assert_called_once()
-
