@@ -5,7 +5,7 @@ import joblib
 import os
 from src.utils.io_load import load_params, load_npz
 from src.utils.io_save import save_metrics, save_predictions, save_roc_curve
-from models.model import train_model, evaluate_model
+from src.models.model import train_model, evaluate_model
 
 
 def main():
