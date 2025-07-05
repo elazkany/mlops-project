@@ -63,10 +63,16 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo '```json' > model_eval_report.md             # Start fresh
-          cat metrics.json >> model_eval_report.md          # Add the metrics
-          echo '```' >> model_eval_report.md                # Close code block
-          echo "" >> model_eval_report.md                   # Add newline
+          # Add metrics data to markdown
+          cat metrics.json >> model_eval_report.md
+
+          echo -e "\n\n---\n\n" >> model_eval_report.md
+          
+          # Add confusion matrix plot to markdown
           echo "![confusion matrix plot](./confusion_matrix.png)" >> model_eval_report.md
+
+          # Create comment from markdown report
           cml comment create model_eval_report.md
+
+      
 
