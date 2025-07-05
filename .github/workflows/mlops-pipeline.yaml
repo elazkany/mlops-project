@@ -63,8 +63,12 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "\`\`\`json" > model_eval_report.md
+
           # Add metrics data to markdown
           cat metrics.json >> model_eval_report.md
+
+          echo "\`\`\`json" > model_eval_report.md
           
           # Add confusion matrix plot to markdown
           echo "![confusion matrix plot](./confusion_matrix.png)" >> model_eval_report.md
