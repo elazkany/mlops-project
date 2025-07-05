@@ -3,8 +3,8 @@
 import json
 import joblib
 import os
-from utils.io_load import load_params, load_npz
-from utils.io_save import save_metrics, save_predictions, save_roc_curve
+from src.utils.io_load import load_params, load_npz
+from src.utils.io_save import save_metrics, save_predictions, save_roc_curve
 from models.model import train_model, evaluate_model
 
 

@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE
-from utils.io_load import load_params, load_dataset
-from utils.io_save import save_npz
+from src.utils.io_load import load_params, load_dataset
+from src.utils.io_save import save_npz
 
 
 def split_data(df: pd.DataFrame, target_column: str, test_size: float, random_state: int):

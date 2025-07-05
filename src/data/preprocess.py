@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.preprocessing import RobustScaler
-from utils.io_load import load_params, load_dataset
-from utils.io_save import save_dataframe
+from src.utils.io_load import load_params, load_dataset
+from src.utils.io_save import save_dataframe
 
 
 def scale_columns(df: pd.DataFrame, columns_to_scale: list) -> pd.DataFrame:
