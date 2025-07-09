@@ -1,22 +1,37 @@
-# Code quality
-pylint==2.14.0
-flake8==4.0.1
-
-# Testing dependencies
-pytest==8.4.1
-pytest-cov
-
-# Code Coverage
-coverage==6.3.2
-
-requests==2.31.0
-pyyaml==6.0.1
-
+# =========================
+# Core ML & Data Libraries
+# =========================
 numpy
 pandas
 matplotlib
-
 scikit-learn
-imblearn
+imbalanced-learn
 
+# =====================
+# Experiment Tracking
+# =====================
+mlflow
+
+# =================
+# Version Control
+# =================
 dvc
+
+# =======================
+# Utility Dependencies
+# =======================
+requests
+pyyaml
+
+# ====================
+# Code Quality Tools
+# ====================
+pylint==2.14.0
+flake8==4.0.1
+
+# ====================
+# Testing Dependencies
+# ====================
+pytest==8.4.1
+pytest-cov
+coverage==6.3.2

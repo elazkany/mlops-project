@@ -1,41 +1,80 @@
 # src/train/train_and_evaluate.py
 
-import json
-import joblib
 import os
-from src.utils.io_load import load_params, load_npz
-from src.utils.io_save import save_metrics, save_predictions, save_roc_curve
+import mlflow
+from mlflow.models.signature import infer_signature
+import matplotlib.pyplot as plt
+from src.utils.io_load import load_params
 from src.models.model import train_model, evaluate_model
-from src.utils.plot_utils import plot_confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
 
 
-def main():
-    # Load model params
-    model_params = load_params("model")
+def create_and_train_model(
+    model_type: str,             # e.g., "logistic_regression" or "random_forest"
+    model_name: str,            # e.g., "lr-without-SMOTE" - no spaces
+    X_train,
+    y_train,
+    X_valid,
+    y_valid,
+    experiment_name: str = "credit-card-fraud-detection"
+) -> str:
+    """
+    Train, evaluate, and log a model using MLflow.
+    """
+    # === Load parameters from params.yaml ===
+    model_config = load_params("models")
+    model_params = model_config[model_type]["model_params"]
 
-    # Load data
-    X_train, y_train = load_npz("data/split/train_balanced.npz")
-    X_test, y_test = load_npz("data/split/test.npz")
+    # === Train the model ===
+    model = train_model(
+        X_train,
+        y_train,
+        model_type=model_type,
+        model_params=model_params
+    )
 
-    # Train model
-    model = train_model(X_train, y_train, model_params)
+    # === Evaluate the model ===
+    metrics, _, _ = evaluate_model(model, X_valid, y_valid)
 
-    # Save trained model
-    os.makedirs("models", exist_ok=True)
-    model_path = "models/model.pkl"
-    joblib.dump(model, model_path)
+    # === Inferred MLflow signature ===
+    input_example = X_train[:1]
+    signature = infer_signature(X_train, model.predict(X_train))
 
-    # Evaluate
-    metrics, y_pred, y_pred_proba = evaluate_model(model, X_test, y_test)
+    if mlflow.active_run():
+        mlflow.end_run()
 
-    print(f"✅ Model trained and saved to {model_path}")
-    print(f"📈 Metrics:\n{json.dumps(metrics, indent=4)}")
+    # === Set MLflow experiment ===
+    mlflow.set_experiment(experiment_name)  # where to log the next run
 
-    save_metrics(metrics)
-    save_predictions(y_test, y_pred)
-    save_roc_curve(y_test, y_pred_proba)
-    plot_confusion_matrix(model, X_test, y_test)
+    print(f"{model_name} trained and evaluated")
 
+    with mlflow.start_run(run_name=model_name):
 
-if __name__ == "__main__":
-    main()
+        # Log metadata
+        mlflow.set_tags({
+            "model_type": model_type,
+            "run_name": model_name,
+        })
+
+        # Log hyperparameters and metrics
+        mlflow.log_params(model_params)
+        mlflow.log_metrics(metrics)
+
+        # Log the model
+        mlflow.sklearn.log_model(
+            model,
+            name="model",
+            input_example=input_example,
+            signature=signature
+        )
+
+        # Plot and log confusion matrix
+        ConfusionMatrixDisplay.from_estimator(model, X_valid, y_valid)
+        plt.title(f"{model_name}\nConfusion Matrix")
+        plot_path = "confusion_matrix.png"  # The name should be the same to compare commom artifact
+        plt.savefig(plot_path)
+        mlflow.log_artifact(plot_path)
+        plt.close()
+        os.remove(plot_path)  # Remove it from root it's already in mlruns
+
+    print(f"{model_name} model and artifacts logged by MLflow")

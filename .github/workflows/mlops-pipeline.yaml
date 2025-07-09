@@ -63,13 +63,23 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Add metrics data to markdown
-          cat metrics.json >> model_eval_report.md
+          echo "# 🧪 Model Evaluation Report" > model_eval_report.md
 
-          echo -e "\n\n---\n\n" >> model_eval_report.md
-          
-          # Add confusion matrix plot to markdown
-          echo "![confusion matrix plot](./confusion_matrix.png)" >> model_eval_report.md
+          echo "## 🔍 Model Comparison" >> model_eval_report.md
+          echo "\n### Metrics Comparison" >> model_eval_report.md
+          echo '```json' >> model_eval_report.md
+          cat reports/compare_metrics.json >> model_eval_report.md
+          echo '```' >> model_eval_report.md
+          echo "\n### Confusion Matrices" >> model_eval_report.md
+          echo "![Compare Confusion Matrices](./reports/compare_confusion_matrices.png)" >> model_eval_report.md
+
+          echo "\n## 🏆 Best Model" >> model_eval_report.md
+          echo "\n### Metrics" >> model_eval_report.md
+          echo '```json' >> model_eval_report.md
+          cat reports/best_model_metrics.json >> model_eval_report.md
+          echo '```' >> model_eval_report.md
+          echo "\n### Confusion Matrix" >> model_eval_report.md
+          echo "![Best Model Confusion Matrix](./reports/best_model_confusion_matrix.png)" >> model_eval_report.md
 
           # Create comment from markdown report
           cml comment create model_eval_report.md

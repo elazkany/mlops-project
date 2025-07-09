@@ -11,12 +11,25 @@ preprocess:
 
 split:
   processed_data_path: data/processed/processed_creditcard.csv
-  split_data_path: data/split
+  train_data_path: data/train
+  validation_data_path: data/validation
+  test_data_path: data/test
   target_column: Class
   test_size: 0.2
   random_state: 42
 
-model:
-  n_estimators: 100
-  max_depth: null
-  random_state: 42
+models:
+  logistic_regression:
+    model_params:
+      penalty: l2
+      C: 1.0
+  random_forest:
+    model_params:
+      n_estimators: 100
+      max_depth: null
+      random_state: 42
+
+experiment_tracking:
+  experiment_name: credit-card-fraud-detection
+  precision_threshold: 0.8
+  best_model_name: challenger_model
