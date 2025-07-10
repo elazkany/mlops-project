@@ -80,16 +80,21 @@ jobs:
 
           echo "![Confusion Matrix Comparison](./reports/compare_confusion_matrices.png)" >> model_eval_report.md
 
-          echo "## 🏆 Best Model" >> model_eval_report.md
+          best_model_name=$(mlflow search-runs --experiment-name "credit-card-fraud-detection" \
+            --filter-tag "best_model = 'true'" \
+            --output json | jq -r '.[0].tags.run_name')
+
+
+          echo "## 🏆 Best Model: \`$best_model_name\`" >> model_eval_report.md
 
           echo "### Metrics" >> model_eval_report.md
 
           {
-            echo "| Model | Accuracy | F1 Score | Precision | Recall |"
-            echo "|--------|----------|----------|------------|--------|"
-            jq -r 'to_entries[] | [.key, (.value.accuracy // "NA"), (.value.f1_score // "NA"), (.value.precision // "NA"), (.value.recall // "NA")] | @tsv' reports/best_mode_metrics.json |
-              while IFS=$'\t' read -r model acc f1 prec rec; do
-                echo "| $model | $acc | $f1 | $prec | $rec |"
+            echo "| Accuracy | F1 Score | Precision | Recall |"
+            echo "|----------|----------|------------|--------|"
+            jq -r '[.accuracy, .f1_score, .precision, .recall] | @tsv' reports/best_model_metrics.json |
+              while IFS=$'\t' read -r acc f1 prec rec; do
+                echo "| $acc | $f1 | $prec | $rec |"
               done
           } >> model_eval_report.md
 
