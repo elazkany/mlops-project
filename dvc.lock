@@ -160,8 +160,8 @@ stages:
       size: 903
     - path: src/train/run_train.py
       hash: md5
-      md5: 14d00ddc96eba4f3a77db2d85fe41a3c
-      size: 1649
+      md5: 4bde50195c6f26b87f34aaf402b82990
+      size: 1713
     - path: src/train/train_and_evaluate.py
       hash: md5
       md5: 0d1fc716d43db820964774908cc65bc1
@@ -169,7 +169,7 @@ stages:
     outs:
     - path: mlruns
       hash: md5
-      md5: 9e0947882b91990aef564e69ec65618e.dir
+      md5: c9c785c39b6cdd926e79b28c9adbb237.dir
       size: 15653475
       nfiles: 141
   find_best_model:
@@ -177,50 +177,50 @@ stages:
     deps:
     - path: mlruns
       hash: md5
-      md5: 42bf6f62a264fa8cde14e52e3167f348.dir
-      size: 15654235
-      nfiles: 144
+      md5: bcd74a55c3593093de9d1923e53f0f10.dir
+      size: 15654245
+      nfiles: 145
     - path: params.yaml
       hash: md5
       md5: eb9229311e974e228c662b1b94d3af7b
       size: 903
     - path: src/train/challenger_model.py
       hash: md5
-      md5: 68318c8f0850f7516075b086290d45e5
-      size: 2930
+      md5: f2ea8737f3a2262ac58a032c1b68c0d3
+      size: 3430
     - path: src/train/run_train.py
       hash: md5
-      md5: 14d00ddc96eba4f3a77db2d85fe41a3c
-      size: 1649
+      md5: 4bde50195c6f26b87f34aaf402b82990
+      size: 1713
     outs:
     - path: deployment/model_version.json
       hash: md5
-      md5: d47415bc6440f97a511626e50dfe027b
+      md5: ff83887ea783f962ec7fe2f8d91ca1a3
       size: 108
   report:
     cmd: python3 -m src.train.generate_cml_report
     deps:
     - path: mlruns
       hash: md5
-      md5: 42bf6f62a264fa8cde14e52e3167f348.dir
-      size: 15654235
-      nfiles: 144
+      md5: bcd74a55c3593093de9d1923e53f0f10.dir
+      size: 15654245
+      nfiles: 145
     - path: params.yaml
       hash: md5
       md5: eb9229311e974e228c662b1b94d3af7b
       size: 903
     - path: src/train/challenger_model.py
       hash: md5
-      md5: 68318c8f0850f7516075b086290d45e5
-      size: 2930
+      md5: f2ea8737f3a2262ac58a032c1b68c0d3
+      size: 3430
     - path: src/train/generate_cml_report.py
       hash: md5
-      md5: 4311a79dccd34b2ad110ce9b6d9be50f
-      size: 2708
+      md5: 86ae0324d6762b5f3d3ccdaa77dae590
+      size: 2790
     - path: src/train/run_train.py
       hash: md5
-      md5: 14d00ddc96eba4f3a77db2d85fe41a3c
-      size: 1649
+      md5: 4bde50195c6f26b87f34aaf402b82990
+      size: 1713
     outs:
     - path: reports/best_model_confusion_matrix.png
       hash: md5
