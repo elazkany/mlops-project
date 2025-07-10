@@ -65,19 +65,36 @@ jobs:
           echo "# 🧪 Model Evaluation Report" >> model_eval_report.md
 
           echo "## 🔍 Model Comparison" >> model_eval_report.md
-          echo "\n### Metrics Comparison" >> model_eval_report.md
-          echo '```json' >> model_eval_report.md
-          cat reports/compare_metrics.json >> model_eval_report.md
-          echo '```' >> model_eval_report.md
-          echo "\n### Confusion Matrices" >> model_eval_report.md
-          echo "![Compare Confusion Matrices](./reports/compare_confusion_matrices.png)" >> model_eval_report.md
+          
+          {
+            echo "### 📊 Metrics Comparison"
+            echo "| Model | Accuracy | F1 Score | Precision | Recall |"
+            echo "|--------|----------|----------|------------|--------|"
+            jq -r 'to_entries[] | [.key, (.value.accuracy // "NA"), (.value.f1_score // "NA"), (.value.precision // "NA"), (.value.recall // "NA")] | @tsv' reports/compare_metrics.json |
+              while IFS=$'\t' read -r model acc f1 prec rec; do
+                echo "| $model | $acc | $f1 | $prec | $rec |"
+              done
+          } >> model_eval_report.md
 
-          echo "\n## 🏆 Best Model" >> model_eval_report.md
-          echo "\n### Metrics" >> model_eval_report.md
-          echo '```json' >> model_eval_report.md
-          cat reports/best_model_metrics.json >> model_eval_report.md
-          echo '```' >> model_eval_report.md
-          echo "\n### Confusion Matrix" >> model_eval_report.md
+          echo "### Confusion Matrices" >> model_eval_report.md
+
+          echo "![Confusion Matrix Comparison](./reports/compare_confusion_matrices.png)" >> model_eval_report.md
+
+          echo "## 🏆 Best Model" >> model_eval_report.md
+
+          echo "### Metrics" >> model_eval_report.md
+
+          {
+            echo "| Model | Accuracy | F1 Score | Precision | Recall |"
+            echo "|--------|----------|----------|------------|--------|"
+            jq -r 'to_entries[] | [.key, (.value.accuracy // "NA"), (.value.f1_score // "NA"), (.value.precision // "NA"), (.value.recall // "NA")] | @tsv' reports/best_mode_metrics.json |
+              while IFS=$'\t' read -r model acc f1 prec rec; do
+                echo "| $model | $acc | $f1 | $prec | $rec |"
+              done
+          } >> model_eval_report.md
+
+          echo "### Confusion Matrix" >> model_eval_report.md
+
           echo "![Best Model Confusion Matrix](./reports/best_model_confusion_matrix.png)" >> model_eval_report.md
 
           # Create comment from markdown report
