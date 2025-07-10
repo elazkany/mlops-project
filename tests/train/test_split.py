@@ -70,8 +70,8 @@ class TestSplitModule(unittest.TestCase):
         )
 
         # Run
-        with patch("src.train.split.pd.DataFrame.to_json") as mock_to_json, \
-             patch("src.train.split.pd.Series.to_frame") as mock_series_to_frame:
+        with patch("pandas.DataFrame.to_json") as mock_to_json, \
+          patch("pandas.Series.to_frame") as mock_series_to_frame:
 
             mock_series_to_frame.return_value.to_json = MagicMock()
             main()
