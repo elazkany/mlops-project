@@ -60,6 +60,15 @@ def select_and_register_best_model(
             )
             print(f"Model registered as '{result.name}', version {result.version}")
 
+            # Promote to Production
+            client.transition_model_version_stage(
+                name=model_registry_name,
+                version=result.version,
+                stage="Production",
+                archive_existing_versions=True
+            )
+            print(f"Model version {result.version} promoted to 'Production'.")
+
             # Store the model version for downstream use
             with open("deployment/model_version.json", "w") as f:
                 json.dump({
