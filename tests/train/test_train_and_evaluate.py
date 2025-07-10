@@ -1,64 +1,65 @@
-"""
-Test the training and evaluation pipeline using large, SMOTE-safe mock data.
-"""
+# tests/test_train_and_evaluate.py
 
+import unittest
+from unittest.mock import patch, MagicMock
 import numpy as np
-from unittest import mock
-from sklearn.ensemble import RandomForestClassifier
-from src.train import train_and_evaluate
+from src.train.train_and_evaluate import create_and_train_model
 
 
-@mock.patch("src.train.train_and_evaluate.load_params")
-@mock.patch("src.train.train_and_evaluate.load_npz")
-@mock.patch("src.train.train_and_evaluate.train_model")
-@mock.patch("src.train.train_and_evaluate.evaluate_model")
-@mock.patch("src.train.train_and_evaluate.save_metrics")
-@mock.patch("src.train.train_and_evaluate.save_predictions")
-@mock.patch("src.train.train_and_evaluate.save_roc_curve")
-@mock.patch("src.train.train_and_evaluate.joblib.dump")
-def test_main_pipeline_runs_without_errors(
-    mock_joblib_dump,
-    mock_save_roc,
-    mock_save_preds,
-    mock_save_metrics,
-    mock_eval_model,
-    mock_train_model,
-    mock_load_npz,
-    mock_load_params,
-):
-    """
-    Test that train_and_evaluate.main() runs end-to-end using mocked I/O and large data.
-    Ensures no failures due to class imbalance or SMOTE dependencies.
-    """
+class TestTrainAndEvaluate(unittest.TestCase):
 
-    # Create large, balanced mock data to avoid SMOTE errors
-    X_train = np.random.rand(100, 10)
-    y_train = np.array([0]*50 + [1]*50)
-    X_test = np.random.rand(20, 10)
-    y_test = np.array([0, 1]*10)
+    @patch("src.train.train_and_evaluate.mlflow")
+    @patch("src.train.train_and_evaluate.os.remove")
+    @patch("src.train.train_and_evaluate.plt")
+    @patch("src.train.train_and_evaluate.ConfusionMatrixDisplay")
+    @patch("src.train.train_and_evaluate.infer_signature")
+    @patch("src.train.train_and_evaluate.evaluate_model")
+    @patch("src.train.train_and_evaluate.train_model")
+    @patch("src.train.train_and_evaluate.load_params")
+    def test_create_and_train_model(
+        self, mock_load_params, mock_train_model, mock_evaluate_model,
+        mock_infer_signature, mock_conf_matrix, mock_plt,
+        mock_os_remove, mock_mlflow
+    ):
+        # === Setup ===
+        X_train = np.random.rand(10, 5)
+        y_train = np.random.randint(0, 2, size=10)
+        X_valid = np.random.rand(4, 5)
+        y_valid = np.random.randint(0, 2, size=4)
 
-    real_model = RandomForestClassifier(random_state=42)
-    real_model.fit(X_train, y_train)
+        model_type = "random_forest"
+        model_name = "rf-test"
+        experiment_name = "unit-test-experiment"
 
-    # Mock return values
-    mock_load_params.return_value = {"n_estimators": 100}
-    mock_load_npz.side_effect = [(X_train, y_train), (X_test, y_test)]
-    mock_train_model.return_value = real_model
-    mock_eval_model.return_value = (
-        {"accuracy": 0.95},
-        [0, 1]*10,
-        [0.1, 0.9]*10,
-    )
+        mock_model = MagicMock()
+        mock_train_model.return_value = mock_model
+        mock_model.predict.return_value = np.zeros(len(X_train))
 
-    # Run main pipeline
-    train_and_evaluate.main()
+        mock_evaluate_model.return_value = ({"accuracy": 0.99}, None, None)
+        mock_load_params.return_value = {
+            "random_forest": {"model_params": {"n_estimators": 10}}
+        }
+        mock_infer_signature.return_value = "fake-signature"
+        mock_mlflow.active_run.return_value = True
 
-    # Validate expected function calls
-    mock_load_params.assert_called_once()
-    assert mock_load_npz.call_count == 2
-    mock_train_model.assert_called_once_with(X_train, y_train, {"n_estimators": 100})
-    mock_eval_model.assert_called_once_with(real_model, X_test, y_test)
-    mock_joblib_dump.assert_called_once()
-    mock_save_metrics.assert_called_once()
-    mock_save_preds.assert_called_once()
-    mock_save_roc.assert_called_once()
+        # === Run ===
+        create_and_train_model(
+            model_type, model_name,
+            X_train, y_train,
+            X_valid, y_valid,
+            experiment_name
+        )
+
+        # === Assertions ===
+        mock_train_model.assert_called_once()
+        mock_evaluate_model.assert_called_once_with(mock_model, X_valid, y_valid)
+        mock_infer_signature.assert_called_once()
+        mock_mlflow.set_experiment.assert_called_with(experiment_name)
+        mock_mlflow.start_run.assert_called()
+        mock_mlflow.sklearn.log_model.assert_called()
+        mock_os_remove.assert_called_with("confusion_matrix.png")
+        mock_plt.savefig.assert_called_with("confusion_matrix.png")
+
+
+if __name__ == "__main__":
+    unittest.main()

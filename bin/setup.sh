@@ -24,6 +24,12 @@ if [ ! -d .venv ]; then
   python3 -m venv .venv
 fi
 
+if [ ! -f .venv/bin/activate ]; then
+    echo "Recreating broken or missing virtual environment"
+    rm -rf .venv  # Remove partially deleted venv if present
+    python3 -m venv .venv
+fi
+
 echo "Configure the developer environment"
 #echo 'export PS1="\[\e]0;\u:\W\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]\$ "' >> ~/.bashrc
 echo "source .venv/bin/activate" >> ~/.bashrc#

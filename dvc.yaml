@@ -41,39 +41,51 @@ stages:
     - data/processed/processed_creditcard.csv
     params:
     - split.processed_data_path
-    - split.split_data_path
+    - split.train_data_path
+    - split.validation_data_path
+    - split.test_data_path
     - split.target_column
     - split.test_size
     - split.random_state
     outs:
-    - data/split/train_raw.npz
-    - data/split/train_balanced.npz
-    - data/split/test.npz
+    - data/train/train_original.npz
+    - data/train/train_resampled.npz
+    - data/validation/valid.npz
+    - data/test/X_test.json
+    - data/test/y_test.json
 
   train_and_evaluate:
-    cmd: python3 -m src.train.train_and_evaluate
+    cmd: python3 -m src.train.run_train
     deps:
-    - data/split/test.npz
-    - data/split/train_balanced.npz
+    - data/train/train_original.npz
+    - data/train/train_resampled.npz
+    - data/validation/valid.npz
+    - params.yaml
     - src/train/train_and_evaluate.py
-    params:
-    - model.n_estimators
-    - model.max_depth
-    - model.random_state
+    - src/train/run_train.py
     outs:
-    - models/model.pkl
-    metrics:
-    - metrics.json:
-        cache: false
-    plots:
-      - plots/predictions.csv:
-          # Write the plot template
-          template: confusion # Style of plot
-          x: predicted_label # X-axis column name in csv file
-          y: true_label # Y-axis column name in csv file
-          x_label: 'Predicted label'
-          y_label: 'True label'
-          title: Confusion matrix
-          # Set the cache parameter to store
-          # plot data in git repository
-          cache: false
+    - mlruns
+
+  find_best_model:
+    cmd: python3 -m src.train.challenger_model
+    deps:
+      - src/train/challenger_model.py
+      - src/train/run_train.py
+      - mlruns
+      - params.yaml
+    outs:
+      - deployment/model_version.json
+
+  report:
+    cmd: python3 -m src.train.generate_cml_report
+    deps:
+      - src/train/generate_cml_report.py
+      - src/train/challenger_model.py
+      - src/train/run_train.py
+      - params.yaml
+      - mlruns
+    outs:
+      - reports/compare_metrics.json
+      - reports/compare_confusion_matrices.png
+      - reports/best_model_metrics.json
+      - reports/best_model_confusion_matrix.png

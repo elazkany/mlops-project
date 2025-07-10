@@ -5,8 +5,8 @@ stages:
     deps:
     - path: params.yaml
       hash: md5
-      md5: fc38156a6237dc80cfc8efa518e45cae
-      size: 570
+      md5: eb9229311e974e228c662b1b94d3af7b
+      size: 903
     params:
       params.yaml:
         download.last_updated: data/last_updated.txt
@@ -28,8 +28,8 @@ stages:
       size: 0
     - path: params.yaml
       hash: md5
-      md5: fc38156a6237dc80cfc8efa518e45cae
-      size: 570
+      md5: eb9229311e974e228c662b1b94d3af7b
+      size: 903
     - path: src/data/collect_and_extract.py
       hash: md5
       md5: 78eb952afa4054c50b45e9c31bf30f40
@@ -107,58 +107,134 @@ stages:
       size: 158139932
     - path: src/train/split.py
       hash: md5
-      md5: d7cebb8151a1ce68ee63a2ebdc47c8e6
-      size: 2593
+      md5: 1985f5bf08db092b10003a42afc2832d
+      size: 2575
     params:
       params.yaml:
         split.processed_data_path: data/processed/processed_creditcard.csv
         split.random_state: 42
-        split.split_data_path: data/split
         split.target_column: Class
+        split.test_data_path: data/test
         split.test_size: 0.2
+        split.train_data_path: data/train
+        split.validation_data_path: data/validation
     outs:
-    - path: data/split/test.npz
+    - path: data/test/X_test.json
       hash: md5
-      md5: 55019566662b5639f365d8b8d44532b4
-      size: 12853080
-    - path: data/split/train_balanced.npz
+      md5: f7c20e9052b83913517eae974cbf1754
+      size: 32967480
+    - path: data/test/y_test.json
       hash: md5
-      md5: fa25ae6760fe00f20a1f779fc531ff88
-      size: 102801773
-    - path: data/split/train_raw.npz
+      md5: 8f88110e7a885feecbc2c17cb49cbff6
+      size: 683544
+    - path: data/train/train_original.npz
       hash: md5
-      md5: e99d198c42937d51c8b4d489e6b5313d
-      size: 51399275
+      md5: 6352a0d527195bc8034739cc69aca961
+      size: 41121549
+    - path: data/train/train_resampled.npz
+      hash: md5
+      md5: a5d3937bfd290e5f270891d7d0bdf3a4
+      size: 82232742
+    - path: data/validation/valid.npz
+      hash: md5
+      md5: 3104342580a8088e5b29285e19fbf0b2
+      size: 10282416
   train_and_evaluate:
-    cmd: python3 -m src.train.train_and_evaluate
+    cmd: python3 -m src.train.run_train
     deps:
-    - path: data/split/test.npz
+    - path: data/train/train_original.npz
       hash: md5
-      md5: 55019566662b5639f365d8b8d44532b4
-      size: 12853080
-    - path: data/split/train_balanced.npz
+      md5: 6352a0d527195bc8034739cc69aca961
+      size: 41121549
+    - path: data/train/train_resampled.npz
       hash: md5
-      md5: fa25ae6760fe00f20a1f779fc531ff88
-      size: 102801773
+      md5: a5d3937bfd290e5f270891d7d0bdf3a4
+      size: 82232742
+    - path: data/validation/valid.npz
+      hash: md5
+      md5: 3104342580a8088e5b29285e19fbf0b2
+      size: 10282416
+    - path: params.yaml
+      hash: md5
+      md5: eb9229311e974e228c662b1b94d3af7b
+      size: 903
+    - path: src/train/run_train.py
+      hash: md5
+      md5: 14d00ddc96eba4f3a77db2d85fe41a3c
+      size: 1649
     - path: src/train/train_and_evaluate.py
       hash: md5
-      md5: 0e6d7b83b39eb5c5846f24f233aa6570
-      size: 1183
-    params:
-      params.yaml:
-        model.max_depth:
-        model.n_estimators: 100
-        model.random_state: 42
+      md5: 0d1fc716d43db820964774908cc65bc1
+      size: 2482
     outs:
-    - path: metrics.json
+    - path: mlruns
       hash: md5
-      md5: e57e1c2255805622edb6bd27065315c4
+      md5: 9e0947882b91990aef564e69ec65618e.dir
+      size: 15653475
+      nfiles: 141
+  find_best_model:
+    cmd: python3 -m src.train.challenger_model
+    deps:
+    - path: mlruns
+      hash: md5
+      md5: 42bf6f62a264fa8cde14e52e3167f348.dir
+      size: 15654235
+      nfiles: 144
+    - path: params.yaml
+      hash: md5
+      md5: eb9229311e974e228c662b1b94d3af7b
+      size: 903
+    - path: src/train/challenger_model.py
+      hash: md5
+      md5: 68318c8f0850f7516075b086290d45e5
+      size: 2930
+    - path: src/train/run_train.py
+      hash: md5
+      md5: 14d00ddc96eba4f3a77db2d85fe41a3c
+      size: 1649
+    outs:
+    - path: deployment/model_version.json
+      hash: md5
+      md5: d47415bc6440f97a511626e50dfe027b
+      size: 108
+  report:
+    cmd: python3 -m src.train.generate_cml_report
+    deps:
+    - path: mlruns
+      hash: md5
+      md5: 42bf6f62a264fa8cde14e52e3167f348.dir
+      size: 15654235
+      nfiles: 144
+    - path: params.yaml
+      hash: md5
+      md5: eb9229311e974e228c662b1b94d3af7b
+      size: 903
+    - path: src/train/challenger_model.py
+      hash: md5
+      md5: 68318c8f0850f7516075b086290d45e5
+      size: 2930
+    - path: src/train/generate_cml_report.py
+      hash: md5
+      md5: 4311a79dccd34b2ad110ce9b6d9be50f
+      size: 2708
+    - path: src/train/run_train.py
+      hash: md5
+      md5: 14d00ddc96eba4f3a77db2d85fe41a3c
+      size: 1649
+    outs:
+    - path: reports/best_model_confusion_matrix.png
+      hash: md5
+      md5: a10c560c792bcfa8f75e53dfa31ee0e5
+      size: 19955
+    - path: reports/best_model_metrics.json
+      hash: md5
+      md5: 9c3e4fa82acf7f8d73f46374bb9acbd6
       size: 96
-    - path: models/model.pkl
+    - path: reports/compare_confusion_matrices.png
       hash: md5
-      md5: 40d4f7001e13fa44ca265f364743d1b7
-      size: 15317785
-    - path: plots/predictions.csv
+      md5: eaca8278d20c6df1ac3a133f8d1584ea
+      size: 85782
+    - path: reports/compare_metrics.json
       hash: md5
-      md5: acb9dae244cb8f3da4693f2e7be9e623
-      size: 227875
+      md5: ee1e7a0c6697c901686b164ae001a8da
+      size: 565
