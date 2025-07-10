@@ -85,7 +85,7 @@ jobs:
             --output json | jq -r '.[0].tags.run_name')
 
 
-          echo "## 🏆 Best Model: \`$best_model_name\`" >> model_eval_report.md
+          echo "## 🏆 Best Model" >> model_eval_report.md
 
           echo "### Metrics" >> model_eval_report.md
 
