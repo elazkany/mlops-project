@@ -1,6 +1,6 @@
 # src/train/challenger_model.py
 
-from pathlib import Path
+# from pathlib import Path
 import json
 import mlflow
 from mlflow.tracking import MlflowClient
@@ -15,7 +15,7 @@ def select_and_register_best_model(
         ):
 
     # Set tracking URI
-    mlflow.set_tracking_uri(f"file://{Path('mlruns').resolve()}")
+    mlflow.set_tracking_uri("file:./mlruns")  # or f"file://{Path('mlruns').resolve()}") for absolute path
     client = MlflowClient()
     experiment = client.get_experiment_by_name(experiment_name)
 

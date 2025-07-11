@@ -15,9 +15,8 @@ def main():
     X_train_resampled, y_train_resampled = load_npz("data/train/train_resampled.npz")
     X_valid, y_valid = load_npz("data/validation/valid.npz")
 
-    mlruns_path = Path("mlruns").resolve()
-    mlruns_path.mkdir(exist_ok=True)
-    mlflow.set_tracking_uri(f"file://{mlruns_path}")
+    mlruns_path = Path("mlruns")  # or = Path("mlruns").resolve() for absolute path
+    mlflow.set_tracking_uri(f"file:./{mlruns_path}")
 
     # Model configs to train
     configs = [
