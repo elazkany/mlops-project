@@ -2,7 +2,7 @@ name: Deploy and Test Fraud API
 
 on:
   workflow_run:
-    workflows: ["Train, Evaluate and Report"]
+    workflows: ["Train, Evaluate and Report"]  # MUST match upstream workflow's `name`
     types:
       - completed
 
@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Build Docker image
@@ -24,9 +24,9 @@ jobs:
       - name: Run Docker container
         run: |
           docker run -d -p 8000:8000 --name fraud-api fraud-api
-          sleep 10  # Give time for API to start
+          sleep 10  # wait for API to start
 
-      - name: Test /predict endpoint with curl
+      - name: Test /predict endpoint
         run: |
           curl -X POST http://localhost:8000/predict \
             -H "Content-Type: application/json" \
