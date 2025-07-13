@@ -15,7 +15,8 @@ mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "file:./mlruns")) #f"fi
 
 
 # Load MLflow model (from registered model in "prod" stage)
-model = mlflow.pyfunc.load_model("models:/challenger_model@prod")
+#model = mlflow.pyfunc.load_model("models:/challenger_model@prod")
+model = mlflow.pyfunc.load_model("model_artifacts")
 
 app = FastAPI()
 

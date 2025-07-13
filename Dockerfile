@@ -12,10 +12,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy app and mlruns directory
 COPY app/ ./app/
-COPY mlruns/ ./mlruns/
+#COPY mlruns/ ./mlruns/
+COPY deployment/model_artifacts/ ./model_artifacts/
+
 
 # Set environment variable for MLflow tracking
-ENV MLFLOW_TRACKING_URI=file:./mlruns
+#ENV MLFLOW_TRACKING_URI=file:./mlruns
 
 # Expose FastAPI port
 EXPOSE 8000

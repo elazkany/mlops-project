@@ -1,4 +1,4 @@
-name: Train, Evaluate and Report
+name: Train and Deploy Pipeline
 
 on:
   push:
@@ -10,11 +10,19 @@ on:
 
 permissions: write-all
 
+env:
+  PYTHON_VERSION: 3.10.12
+  DOCKER_IMAGE_NAME: fraud-api
+  STAGING_PORT: 8000
+
+
 jobs:
   train_and_report_eval_performance:
+    name: 🧪 Train Model and Generate Report
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout 
+      - name: Checkout Repository
         uses: actions/checkout@v3
       
       - name: Setup Python
@@ -22,15 +30,15 @@ jobs:
         with:
           python-version: 3.10.12
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt  # Or wherever flake8 is listed
+          pip install -r requirements.txt
 
-      - name: Lint with flake8 # The flake8 library was installed as a dependency in the requirements.txt file
+      - name: Run Lint Check (flake8) # The flake8 library was installed as a dependency in the requirements.txt file
         run: flake8 src tests --statistics
 
-      - name: Run unit tests with pytest
+      - name: Run Unit Tests (pytest)
         run: PYTHONPATH=src pytest -v --cov=src --cov-report=term-missing
 
       # Setup CML GitHub Action
@@ -42,7 +50,7 @@ jobs:
 
       - name: Reproduce DVC pipeline
         run: |
-          echo "🧪 Running DVC pipeline..."
+          echo "Running DVC pipeline..."
           dvc repro
 
       - name: Commit and push DVC-tracked outputs
@@ -58,7 +66,7 @@ jobs:
           git commit -m "Update metrics and plots from CI" || echo "Nothing to commit"
           git push || echo "Nothing to push"
 
-      - name: Write CML report
+      - name: Generate CML report
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -106,11 +114,11 @@ jobs:
           cml comment create model_eval_report.md
 
   deploy_and_test_container:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: 🚀 Deploy and Test Fraud Detection API
+    needs: train_and_report_eval_performance
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
@@ -121,12 +129,12 @@ jobs:
 
       - name: Run Docker container
         run: |
-          docker run -d -p 8000:8000 --name fraud-api fraud-api
+          docker run -d -p ${{ env.STAGING_PORT }}:8000 --name fraud-api
           sleep 10  # wait for API to start
 
       - name: Test /predict endpoint
         run: |
-          curl -X POST http://localhost:8000/predict \
+          curl -X POST http://localhost:${{ env.STAGING_PORT }}/predict \
             -H "Content-Type: application/json" \
             -d '{
               "Time": -0.5073720321, "V1": -16.5265065691, "V2": 8.5849717959, "V3": -18.6498531852,
@@ -137,10 +145,10 @@ jobs:
               "V20": -1.5149234353, "V21": 1.1907386948, "V22": -1.127670009, "V23": -2.3585787698,
               "V24": 0.673461329, "V25": -1.4136996746, "V26": -0.4627623614, "V27": -2.0185752488,
               "V28": -1.0428041697, "Amount": 4.7815272829
-            }'
+            }' | jq
 
       - name: Stop and remove Docker container
-        if: always()
+        if: always()  # ensures the step runs no matter what
         run: docker rm -f fraud-api
       
 

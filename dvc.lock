@@ -5,8 +5,8 @@ stages:
     deps:
     - path: params.yaml
       hash: md5
-      md5: eb9229311e974e228c662b1b94d3af7b
-      size: 903
+      md5: a18e41cfb4788774e9aa190a0777b354
+      size: 963
     params:
       params.yaml:
         download.last_updated: data/last_updated.txt
@@ -28,8 +28,8 @@ stages:
       size: 0
     - path: params.yaml
       hash: md5
-      md5: eb9229311e974e228c662b1b94d3af7b
-      size: 903
+      md5: a18e41cfb4788774e9aa190a0777b354
+      size: 963
     - path: src/data/collect_and_extract.py
       hash: md5
       md5: 78eb952afa4054c50b45e9c31bf30f40
@@ -156,12 +156,12 @@ stages:
       size: 10282416
     - path: params.yaml
       hash: md5
-      md5: eb9229311e974e228c662b1b94d3af7b
-      size: 903
+      md5: a18e41cfb4788774e9aa190a0777b354
+      size: 963
     - path: src/train/run_train.py
       hash: md5
-      md5: b89b5c635b017647fe73b28b3075e633
-      size: 1715
+      md5: cd34476fe8192494259d5c6582fdd2ec
+      size: 1716
     - path: src/train/train_and_evaluate.py
       hash: md5
       md5: 0d1fc716d43db820964774908cc65bc1
@@ -169,7 +169,7 @@ stages:
     outs:
     - path: mlruns
       hash: md5
-      md5: dea64c4c4ccf832da2fa428975bb21bd.dir
+      md5: 432c0b243219fd1ee506af86dbafbda9.dir
       size: 15653654
       nfiles: 142
   find_best_model:
@@ -177,50 +177,50 @@ stages:
     deps:
     - path: mlruns
       hash: md5
-      md5: 7f244870e496765134ede40d3c3675eb.dir
+      md5: de31838279c03b690eca7d674dc4b4f2.dir
       size: 15654424
       nfiles: 146
     - path: params.yaml
       hash: md5
-      md5: eb9229311e974e228c662b1b94d3af7b
-      size: 903
+      md5: a18e41cfb4788774e9aa190a0777b354
+      size: 963
     - path: src/train/challenger_model.py
       hash: md5
-      md5: d202f862b581ad779cdce02891b20178
-      size: 3470
+      md5: ae69c6755d96fb8325a35a758d962c96
+      size: 3473
     - path: src/train/run_train.py
       hash: md5
-      md5: b89b5c635b017647fe73b28b3075e633
-      size: 1715
+      md5: cd34476fe8192494259d5c6582fdd2ec
+      size: 1716
     outs:
     - path: deployment/model_version.json
       hash: md5
-      md5: d236cc646ac7628195edef4f467d9437
+      md5: e26fa5420eddbcbefce52b69ba8ac9ad
       size: 108
   report:
     cmd: python3 -m src.train.generate_cml_report
     deps:
     - path: mlruns
       hash: md5
-      md5: 7f244870e496765134ede40d3c3675eb.dir
+      md5: de31838279c03b690eca7d674dc4b4f2.dir
       size: 15654424
       nfiles: 146
     - path: params.yaml
       hash: md5
-      md5: eb9229311e974e228c662b1b94d3af7b
-      size: 903
+      md5: a18e41cfb4788774e9aa190a0777b354
+      size: 963
     - path: src/train/challenger_model.py
       hash: md5
-      md5: d202f862b581ad779cdce02891b20178
-      size: 3470
+      md5: ae69c6755d96fb8325a35a758d962c96
+      size: 3473
     - path: src/train/generate_cml_report.py
       hash: md5
       md5: 86ae0324d6762b5f3d3ccdaa77dae590
       size: 2790
     - path: src/train/run_train.py
       hash: md5
-      md5: b89b5c635b017647fe73b28b3075e633
-      size: 1715
+      md5: cd34476fe8192494259d5c6582fdd2ec
+      size: 1716
     outs:
     - path: reports/best_model_confusion_matrix.png
       hash: md5
@@ -238,3 +238,56 @@ stages:
       hash: md5
       md5: ee1e7a0c6697c901686b164ae001a8da
       size: 565
+  export_best_model:
+    cmd: python3 -m src.deploy.export_model
+    deps:
+    - path: deployment/model_version.json
+      hash: md5
+      md5: e26fa5420eddbcbefce52b69ba8ac9ad
+      size: 108
+    - path: mlruns
+      hash: md5
+      md5: de31838279c03b690eca7d674dc4b4f2.dir
+      size: 15654424
+      nfiles: 146
+    - path: src/deploy/export_model.py
+      hash: md5
+      md5: 46aa9706aecd682707851f1a30cba4ff
+      size: 3401
+    outs:
+    - path: deployment/model_artifacts/MLmodel
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: deployment/model_artifacts/conda.yaml
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: deployment/model_artifacts/input_example.json
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: deployment/model_artifacts/metadata.json
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: deployment/model_artifacts/model.pkl
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: deployment/model_artifacts/python_env.yaml
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: deployment/model_artifacts/registered_model_meta
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: deployment/model_artifacts/requirements.txt
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
+    - path: deployment/model_artifacts/serving_input_example.json
+      hash: md5
+      md5: d41d8cd98f00b204e9800998ecf8427e
+      size: 0
