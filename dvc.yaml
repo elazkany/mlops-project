@@ -89,3 +89,12 @@ stages:
       - reports/compare_confusion_matrices.png
       - reports/best_model_metrics.json
       - reports/best_model_confusion_matrix.png
+
+  export_best_model:
+    cmd: python3 -m src.deploy.export_model
+    deps:
+      - src/deploy/export_model.py
+      - deployment/model_version.json
+      - mlruns
+    outs:
+      - deployment/model_artifacts

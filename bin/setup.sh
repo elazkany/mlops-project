@@ -8,10 +8,13 @@ echo "****************************************"
 
 echo "Installing Python and Virtual Environment"
 sudo apt-get update
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-pip python3-venv
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-pip python3-venv docker.io
 
 echo "Checking the Python version..."
 python3 --version
+
+#echo "Enabling BuildKit..."
+#echo "export DOCKER_BUILDKIT=1" >> ~/.bashrc
 
 if [ ! -f .gitignore ]; then
   touch .gitignore
@@ -30,9 +33,9 @@ if [ ! -f .venv/bin/activate ]; then
     python3 -m venv .venv
 fi
 
-echo "Configure the developer environment"
+#echo "Configure the developer environment"
 #echo 'export PS1="\[\e]0;\u:\W\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]\$ "' >> ~/.bashrc
-echo "source .venv/bin/activate" >> ~/.bashrc#
+echo "source .venv/bin/activate" >> ~/.bashrc
 
 echo "Installing Python dependencies..."
 source .venv/bin/activate && python3 -m pip install --upgrade pip wheel

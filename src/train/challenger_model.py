@@ -1,6 +1,6 @@
 # src/train/challenger_model.py
 
-from pathlib import Path
+# from pathlib import Path
 import json
 import mlflow
 from mlflow.tracking import MlflowClient
@@ -15,7 +15,7 @@ def select_and_register_best_model(
         ):
 
     # Set tracking URI
-    mlflow.set_tracking_uri(f"file://{Path('mlruns').resolve()}")
+    mlflow.set_tracking_uri("file:./mlruns")  # or f"file://{Path('mlruns').resolve()}") for absolute path
     client = MlflowClient()
     experiment = client.get_experiment_by_name(experiment_name)
 
@@ -58,13 +58,24 @@ def select_and_register_best_model(
                 model_uri=f"runs:/{run_id}/model",
                 name=model_registry_name
             )
-            print(f"Model registered as '{result.name}', version {result.version}")
+
+            model_version = result.version if hasattr(result, 'version') else result["version"]
+
+            print(f"Model registered as '{model_registry_name}', version {model_version}")
+
+            # Promote to Production
+            client.set_registered_model_alias(
+                name=model_registry_name,
+                alias="prod",
+                version=model_version,
+            )
+            print(f"Model version {model_version} promoted to 'Production'.")
 
             # Store the model version for downstream use
             with open("deployment/model_version.json", "w") as f:
                 json.dump({
-                    "model_name": result.name,
-                    "version": result.version,
+                    "model_name": model_registry_name,
+                    "version": model_version,
                     "run_id": run_id
                 }, f, indent=4)
 
