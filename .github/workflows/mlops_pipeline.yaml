@@ -140,7 +140,7 @@ jobs:
 
       - name: Run Docker container
         run: |
-          docker run -d -p ${{ env.STAGING_PORT }}:8000 --name fraud-api
+          docker run -d -p ${{ env.STAGING_PORT }}:8000 --name fraud-api fraud-api
           sleep 10  # wait for API to start
 
       - name: Test /predict endpoint
