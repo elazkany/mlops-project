@@ -5,8 +5,8 @@ stages:
     deps:
     - path: params.yaml
       hash: md5
-      md5: a18e41cfb4788774e9aa190a0777b354
-      size: 963
+      md5: eb9229311e974e228c662b1b94d3af7b
+      size: 903
     params:
       params.yaml:
         download.last_updated: data/last_updated.txt
@@ -28,8 +28,8 @@ stages:
       size: 0
     - path: params.yaml
       hash: md5
-      md5: a18e41cfb4788774e9aa190a0777b354
-      size: 963
+      md5: eb9229311e974e228c662b1b94d3af7b
+      size: 903
     - path: src/data/collect_and_extract.py
       hash: md5
       md5: 78eb952afa4054c50b45e9c31bf30f40
@@ -156,8 +156,8 @@ stages:
       size: 10282416
     - path: params.yaml
       hash: md5
-      md5: a18e41cfb4788774e9aa190a0777b354
-      size: 963
+      md5: eb9229311e974e228c662b1b94d3af7b
+      size: 903
     - path: src/train/run_train.py
       hash: md5
       md5: cd34476fe8192494259d5c6582fdd2ec
@@ -169,7 +169,7 @@ stages:
     outs:
     - path: mlruns
       hash: md5
-      md5: 432c0b243219fd1ee506af86dbafbda9.dir
+      md5: 1efb66bc0137fc09ebafcb757c339bde.dir
       size: 15653654
       nfiles: 142
   find_best_model:
@@ -177,13 +177,13 @@ stages:
     deps:
     - path: mlruns
       hash: md5
-      md5: de31838279c03b690eca7d674dc4b4f2.dir
+      md5: 465b819964a87e9432d8afc73faba33e.dir
       size: 15654424
       nfiles: 146
     - path: params.yaml
       hash: md5
-      md5: a18e41cfb4788774e9aa190a0777b354
-      size: 963
+      md5: eb9229311e974e228c662b1b94d3af7b
+      size: 903
     - path: src/train/challenger_model.py
       hash: md5
       md5: ae69c6755d96fb8325a35a758d962c96
@@ -195,20 +195,20 @@ stages:
     outs:
     - path: deployment/model_version.json
       hash: md5
-      md5: e26fa5420eddbcbefce52b69ba8ac9ad
+      md5: db661e341f89e884a5556d76e1546271
       size: 108
   report:
     cmd: python3 -m src.train.generate_cml_report
     deps:
     - path: mlruns
       hash: md5
-      md5: de31838279c03b690eca7d674dc4b4f2.dir
+      md5: 465b819964a87e9432d8afc73faba33e.dir
       size: 15654424
       nfiles: 146
     - path: params.yaml
       hash: md5
-      md5: a18e41cfb4788774e9aa190a0777b354
-      size: 963
+      md5: eb9229311e974e228c662b1b94d3af7b
+      size: 903
     - path: src/train/challenger_model.py
       hash: md5
       md5: ae69c6755d96fb8325a35a758d962c96
@@ -243,51 +243,20 @@ stages:
     deps:
     - path: deployment/model_version.json
       hash: md5
-      md5: e26fa5420eddbcbefce52b69ba8ac9ad
+      md5: db661e341f89e884a5556d76e1546271
       size: 108
     - path: mlruns
       hash: md5
-      md5: de31838279c03b690eca7d674dc4b4f2.dir
+      md5: 465b819964a87e9432d8afc73faba33e.dir
       size: 15654424
       nfiles: 146
     - path: src/deploy/export_model.py
       hash: md5
-      md5: 46aa9706aecd682707851f1a30cba4ff
-      size: 3401
+      md5: 911508a23d784478e03e3148d692f05f
+      size: 2027
     outs:
-    - path: deployment/model_artifacts/MLmodel
+    - path: deployment/model_artifacts
       hash: md5
-      md5: d41d8cd98f00b204e9800998ecf8427e
-      size: 0
-    - path: deployment/model_artifacts/conda.yaml
-      hash: md5
-      md5: d41d8cd98f00b204e9800998ecf8427e
-      size: 0
-    - path: deployment/model_artifacts/input_example.json
-      hash: md5
-      md5: d41d8cd98f00b204e9800998ecf8427e
-      size: 0
-    - path: deployment/model_artifacts/metadata.json
-      hash: md5
-      md5: d41d8cd98f00b204e9800998ecf8427e
-      size: 0
-    - path: deployment/model_artifacts/model.pkl
-      hash: md5
-      md5: d41d8cd98f00b204e9800998ecf8427e
-      size: 0
-    - path: deployment/model_artifacts/python_env.yaml
-      hash: md5
-      md5: d41d8cd98f00b204e9800998ecf8427e
-      size: 0
-    - path: deployment/model_artifacts/registered_model_meta
-      hash: md5
-      md5: d41d8cd98f00b204e9800998ecf8427e
-      size: 0
-    - path: deployment/model_artifacts/requirements.txt
-      hash: md5
-      md5: d41d8cd98f00b204e9800998ecf8427e
-      size: 0
-    - path: deployment/model_artifacts/serving_input_example.json
-      hash: md5
-      md5: d41d8cd98f00b204e9800998ecf8427e
-      size: 0
+      md5: 4031594dfe90a849063431c281f046a6.dir
+      size: 13235006
+      nfiles: 8

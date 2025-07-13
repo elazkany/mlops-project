@@ -1,9 +1,0 @@
-/conda.yaml
-/input_example.json
-/metadata.json
-/MLmodel
-/model.pkl
-/python_env.yaml
-/registered_model_meta
-/requirements.txt
-/serving_input_example.json

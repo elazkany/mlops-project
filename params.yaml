@@ -33,6 +33,3 @@ experiment_tracking:
   experiment_name: credit-card-fraud-detection
   precision_threshold: 0.8
   best_model_name: challenger_model
-
-deployment:
-  deploy_using: mlflow  # fastapi or mlflow

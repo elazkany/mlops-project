@@ -97,12 +97,4 @@ stages:
       - deployment/model_version.json
       - mlruns
     outs:
-      - deployment/model_artifacts/conda.yaml
-      - deployment/model_artifacts/input_example.json
-      - deployment/model_artifacts/metadata.json
-      - deployment/model_artifacts/MLmodel
-      - deployment/model_artifacts/model.pkl
-      - deployment/model_artifacts/python_env.yaml
-      - deployment/model_artifacts/registered_model_meta
-      - deployment/model_artifacts/requirements.txt
-      - deployment/model_artifacts/serving_input_example.json
+      - deployment/model_artifacts
