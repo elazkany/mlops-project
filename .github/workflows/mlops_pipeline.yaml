@@ -124,6 +124,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Pull DVC model artifacts
+        run: dvc pull deployment/model_artifacts
+
       - name: Build Docker image
         run: docker build -t fraud-api .
 
