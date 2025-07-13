@@ -1,4 +1,4 @@
-name: Train and Deploy Pipeline
+name: 🚀 Train → Evaluate → Export → Deploy → Test
 
 on:
   push:
@@ -17,8 +17,8 @@ env:
 
 
 jobs:
-  train_and_report_eval_performance:
-    name: 🧪 Train Model and Generate Report
+  mlops_pipeline:
+    name: Full MLOps CI/CD Run
     runs-on: ubuntu-latest
 
     steps:
@@ -113,27 +113,27 @@ jobs:
           # Create comment from markdown report
           cml comment create model_eval_report.md
 
-  deploy_and_test_container:  # separate environment
-    name: 🚀 Deploy and Test Fraud Detection API
-    needs: train_and_report_eval_performance
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+  # deploy_and_test_container:  # separate environment
+    # name: 🚀 Deploy and Test Fraud Detection API
+    # needs: train_and_report_eval_performance
+    # runs-on: ubuntu-latest
+    # steps:
+      # - name: Checkout Repository
+        # uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
+      # - name: Setup Python
+        # uses: actions/setup-python@v4
+        # with:
+          # python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install DVC
-        run: pip install dvc
+      # - name: Install DVC
+        # run: pip install dvc
 
-      - name: Pull DVC model artifacts
-        run: dvc pull
+      # - name: Pull DVC model artifacts
+        # run: dvc pull
 
       - name: Build Docker image
         run: docker build -t fraud-api .
