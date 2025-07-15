@@ -1,4 +1,4 @@
 .venv/
 .dvc_cache/
 /mlruns
-*.ipynb linguist-language=Python
+*.ipynb linguist-detectable=false
