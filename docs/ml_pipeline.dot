@@ -1,0 +1,19 @@
+strict digraph {
+"check_for_new_data";
+"collect_data";
+"preprocess";
+"split";
+"train_and_evaluate";
+"find_best_model";
+"report";
+"export_best_model";
+"check_for_new_data" -> "collect_data";
+"collect_data" -> "preprocess";
+"preprocess" -> "split";
+"split" -> "train_and_evaluate";
+"train_and_evaluate" -> "find_best_model";
+"train_and_evaluate" -> "report";
+"train_and_evaluate" -> "export_best_model";
+"find_best_model" -> "export_best_model";
+}
+
