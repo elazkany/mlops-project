@@ -1,4 +1,3 @@
 .venv/
 .dvc_cache/
 /mlruns
-*.ipynb linguist-detectable=false
